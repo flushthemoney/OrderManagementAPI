@@ -1,0 +1,689 @@
+{
+  "info": {
+    "_postman_id": "e1f7b8c5-9d2e-4f1a-b3c4-567890abcdef",
+    "name": "Order Management API",
+    "description": "Complete test collection for Order Management API with success and failure scenarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"Password123!\",\n  \"fullName\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User - Missing Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"\",\n  \"email\": \"invalid-email\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User - Password Too Short",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser2\",\n  \"email\": \"testuser2@example.com\",\n  \"password\": \"123\",\n  \"fullName\": \"Test User 2\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User - Duplicate Username",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"anotheremail@example.com\",\n  \"password\": \"Password123!\",\n  \"fullName\": \"Another User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set(\"authToken\", response.token);",
+                  "    pm.environment.set(\"username\", response.username);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Invalid Username",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"nonexistentuser\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Invalid Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"WrongPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Missing Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"\",\n  \"password\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get All Orders - Success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders - No Authorization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders - Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token-here"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set(\"createdOrderId\", response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Laptop\",\n  \"quantity\": 2,\n  \"unitPrice\": 999.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order - No Authorization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Laptop\",\n  \"quantity\": 2,\n  \"unitPrice\": 999.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order - Missing Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"\",\n  \"quantity\": 0,\n  \"unitPrice\": -10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order - Invalid Quantity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Mouse\",\n  \"quantity\": -5,\n  \"unitPrice\": 25.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order - Invalid Unit Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Keyboard\",\n  \"quantity\": 1,\n  \"unitPrice\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID - Success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{createdOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{createdOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "99999"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID - No Authorization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order - Success",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Gaming Laptop\",\n  \"quantity\": 1,\n  \"unitPrice\": 1299.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{createdOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{createdOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order - Partial Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{createdOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{createdOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order - Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Updated Product\",\n  \"quantity\": 5,\n  \"unitPrice\": 199.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "99999"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order - No Authorization",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Unauthorized Update\",\n  \"quantity\": 1,\n  \"unitPrice\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order - Invalid Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": -10,\n  \"unitPrice\": -50.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{createdOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{createdOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Second Order for Delete Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set(\"orderToDelete\", response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Mouse Pad\",\n  \"quantity\": 1,\n  \"unitPrice\": 15.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order - Success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{orderToDelete}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{orderToDelete}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order - Not Found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "99999"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order - No Authorization",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Deleted Order Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Orders/{{orderToDelete}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Orders", "{{orderToDelete}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5159",
+      "type": "string"
+    }
+  ]
+}
